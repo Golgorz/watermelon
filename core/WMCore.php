@@ -32,7 +32,7 @@ class WMCore {
 	
 	/**
 	 *
-	 * @return GFStarter
+	 * @return WMCore
 	 */
 	public static function getInstance() {
 		if (!isset(self::$instance)) {
@@ -43,7 +43,7 @@ class WMCore {
 	}
 	
 	public function __clone() {
-		trigger_error('Cannot clone GFStarter class', E_USER_ERROR);
+		trigger_error('Cannot clone WMCore class', E_USER_ERROR);
 	}
 	
 	
@@ -97,25 +97,16 @@ class WMCore {
 	 * @param string $name
 	 */
 
-	public static function withRoute($method, $url, $class, $classMethod = null, $csrf = false, $name = "") {
+	public static function withRoute($method, $url, $target, $name = "") {
 		$config = array();
 		if($method == "all") $method = array();
 		if(!is_array($method)) $method = array($method);
 
 		$config["name"] = $name;
-		$config["checkCSRF"] = $csrf;
 		$config["verbs"] = $method;
 
-		if(is_callable($class)) {
-			$config["targetClass"] = null;
-			$config['targetClassMethod'] = null;
-			$route = RouteModel::withConfig($url, $config);
-			$route->setFunction($class);
-		} else {
-			$config["targetClass"] = $class;
-			$config['targetClassMethod'] = $classMethod;
-			$route = RouteModel::withConfig($url, $config);
-		}
+		$config["target"] = $target;
+		$route = RouteModel::withConfig($url, $config);
 
 		self::$routerCollection->attachRoute($route);
 	}

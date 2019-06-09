@@ -2,13 +2,14 @@
 namespace core\controllers;
 
 use Exception;
+use Predis\Client;
 
 /**
  * Simple redis cache.
  * @author "Diego Lopez Rivera forgin50@gmail.com"
  *
  */
-class SimpleCacheController {
+class RedisCacheController {
 
 	protected $redisClient;
 	private static $instance;
@@ -63,10 +64,10 @@ class SimpleCacheController {
 
 	public static function getRedisClient() {
 		if(self::$redisClient == null) {
-			self::$redisClient = new \Predis\Client(array (
-					'scheme' => DB_REDIS_SCHEME,
-					'host' => DB_REDIS_HOST,
-					'port' => DB_REDIS_PORT
+			self::$redisClient = new Client(array (
+					'scheme' => $_ENV['DB_REDIS_SCHEME'],
+					'host' => $_ENV['DB_REDIS_HOST'],
+					'port' => $_ENV['DB_REDIS_PORT']
 			));
 			return self::$redisClient;
 		} else {

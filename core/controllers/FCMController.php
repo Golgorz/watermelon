@@ -35,7 +35,7 @@ class FCMController {
 
 	    $headers = array
 	    (
-	        'Authorization: key=' . FCM_API_ACCESS_KEY,
+	        'Authorization: key=' . $_ENV['FCM_API_ACCESS_KEY'],
 	        'Content-Type: application/json'
 	    );
 

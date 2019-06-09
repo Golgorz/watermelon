@@ -147,7 +147,6 @@ class ExceptionController {
 		self::$code = 404;
 		self::$msg = utf8_encode("PAGE NOT FOUND");
 		self::showMessage();
-		//new PAGPublic404();
 	}
 
 	private static function showMessage() {

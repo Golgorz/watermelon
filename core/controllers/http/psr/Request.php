@@ -10,6 +10,7 @@ use core\controllers\http\psr\interfaces\StreamInterface;
 use core\helpers\Utils;
 use core\controllers\ExceptionController;
 use Core\Controllers\GFSessions\GFSessionController;
+use core\controllers\router\RouteModel;
 
 /**
  * Headers
@@ -156,10 +157,6 @@ class Request extends Message implements RequestInterface {
 			parse_str($body, $data);
 			return $data;
 		};
-		$this->bodyParsers['application/x-www-form-urlencoded; charset=utf-8'] = function($body) {
-			parse_str($body, $data);
-			return $data;
-		};
 
 		$this->bodyParsers['default'] = function($body) {
 			$postvars = $_POST;
@@ -195,7 +192,8 @@ class Request extends Message implements RequestInterface {
 	}
 
 	public function parsePostParams() {
-		if (isset($_SERVER["CONTENT_TYPE"]) && $contentType = strtolower($_SERVER["CONTENT_TYPE"])) {
+		if (isset($_SERVER["CONTENT_TYPE"]) && $contentType = explode(";",strtolower($_SERVER["CONTENT_TYPE"]))[0]) {
+			
 			$body = (string)$this->getBody()->__toString();
 			if (isset($this->bodyParsers[$contentType]) === true) {
 				$parsed = $this->bodyParsers[$contentType]($body);
@@ -313,38 +311,32 @@ class Request extends Message implements RequestInterface {
 
 	}
 
-	public function isValidCSRF() {
-		if($this->getMatchedRoute()->isCSRFProtected && CSRF_ENABLED && SESSIONS_SYSTEM_ACTIVE) {
-			GFSessionController::getInstance()->isValidCSRF($this->postParams);
-		} else {
-			return true;
-		}
-	}
 
 	public function executeRequest() {
 
 		if(!$this->hasMatch) {
 			$this->dispatchNoMatch();
 		} else {
-			if($this->isValidCSRF()) {
-				$matchedRoute = $this->getMatchedRoute();
-				if($matchedRoute->function != null) {
-					$data = array_merge($this->getParams, $this->postParams, $this->routeParams);
-					call_user_func($matchedRoute->function, $data);
+			$matchedRoute = $this->getMatchedRoute();
+			$data = array_merge($this->getParams, $this->postParams, $this->routeParams);
+			
+			if($matchedRoute->getTarget() != null) {
+				if(is_callable($matchedRoute->getTarget())) {
+					call_user_func($matchedRoute->getTarget(), $data);
 				} else {
-					$class = $matchedRoute->getTargetClass();
-
-					if ($matchedRoute->getTargetClassMethod() != null) {
-						$data = array_merge($this->getParams, $this->postParams, $this->routeParams);
-						call_user_func(array($class, $matchedRoute->getTargetClassMethod()), $data);
+					if(strpos($matchedRoute->getTarget(), "::")) {
+						$classMethod = explode("::", $matchedRoute->getTarget());
+						$class = $classMethod[0];
+						$method = $classMethod[1];
+						call_user_func_array(array($class, $method), $data);
+					
 					} else {
 						if(class_exists($class))
 							new $class;
 						else ExceptionController::classNotFound();
 					}
 				}
-			} else {
-				ExceptionController::invalidCSRF();
+				
 			}
 
 		}
@@ -422,6 +414,10 @@ class Request extends Message implements RequestInterface {
 		$this->hasMatch = $hasMatch;
 		return $this;
 	}
+	/**
+	 * 
+	 * @return RouteModel
+	 */
 	public function getMatchedRoute() {
 		return $this->matchedRoute;
 	}

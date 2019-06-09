@@ -20,7 +20,7 @@ class WMEventController implements WMEventControllerInterface, EventManagerInter
 	 * @see \Controllers\Events\EventControllerInterface::on()
 	 */
 	public static function on($event, callable $callback) {
-		if(EVENTS_SYSTEM_ACTIVE === true)
+		if(EVENTS_SYSTEM_ENABLED=== true)
 			self::$listeners[$event][] = $callback;
 
 	}
@@ -31,7 +31,7 @@ class WMEventController implements WMEventControllerInterface, EventManagerInter
 	 */
 	public static function once($event, callable $callback) {
 
-		if(EVENTS_SYSTEM_ACTIVE === true) {
+		if(EVENTS_SYSTEM_ENABLED=== true) {
 			$wrapper = null;
 			$wrapper = function() use ($event, $callback, &$wrapper) {
 				self::removeListener($event, $wrapper);
@@ -48,7 +48,7 @@ class WMEventController implements WMEventControllerInterface, EventManagerInter
 	 * @see \Controllers\Events\EventControllerInterface::dispatch()
 	 */
 	public static function dispatch($event, array $params = null) {
-		if(EVENTS_SYSTEM_ACTIVE === true) {
+		if(EVENTS_SYSTEM_ENABLED=== true) {
 			if(isset(self::$listeners[$event])) {
 				$continue = true;
 				foreach (self::$listeners[$event] as $listener ) {
@@ -66,7 +66,7 @@ class WMEventController implements WMEventControllerInterface, EventManagerInter
 	 * @see \Controllers\Events\EventControllerInterface::getEvents()
 	 */
 	public static function getEvents() {
-		if(EVENTS_SYSTEM_ACTIVE === true)
+		if(EVENTS_SYSTEM_ENABLED=== true)
 			return array_keys(self::$listeners);
 
 	}
@@ -76,7 +76,7 @@ class WMEventController implements WMEventControllerInterface, EventManagerInter
 	 * @see \Controllers\Events\EventControllerInterface::getEvents()
 	 */
 	public static function getPsrEvents() {
-		if(EVENTS_SYSTEM_ACTIVE === true)
+		if(EVENTS_SYSTEM_ENABLED=== true)
 			return array_keys(self::$psrEvents);
 
 	}
@@ -86,7 +86,7 @@ class WMEventController implements WMEventControllerInterface, EventManagerInter
 	 * @see \Controllers\Events\EventControllerInterface::removeEvent()
 	 */
 	public static function removeEvent($event) {
-		if(EVENTS_SYSTEM_ACTIVE === true) {
+		if(EVENTS_SYSTEM_ENABLED=== true) {
 			if(($key = array_search($event, self::$listeners)) !== false) {
 				unset(self::$listeners[$key]);
 			}
@@ -99,7 +99,7 @@ class WMEventController implements WMEventControllerInterface, EventManagerInter
 	 * @see \Controllers\Events\EventControllerInterface::removeListener()
 	 */
 	public static function removeListener($event, callable $callBack) {
-		if(EVENTS_SYSTEM_ACTIVE === true) {
+		if(EVENTS_SYSTEM_ENABLED=== true) {
 			if (!isset(self::$listeners[$event])) {
 				return false;
 			}
@@ -112,13 +112,13 @@ class WMEventController implements WMEventControllerInterface, EventManagerInter
 
 	}
 
-
+
 	/**
 	 * {@inheritDoc}
 	 * @see \Core\Controllers\GFEvents\EventManagerInterface::attach()
 	 */
 	public function attach($event, $callback, $priority = 0) {
-		if(EVENTS_SYSTEM_ACTIVE === true) {
+		if(EVENTS_SYSTEM_ENABLED=== true) {
 			if(isset(self::$psrEvents[$event])) {
 				self::$psrEvents[$event][$priority][] = $callback;
 				return true;
@@ -137,7 +137,7 @@ class WMEventController implements WMEventControllerInterface, EventManagerInter
 	 * @see \Core\Controllers\GFEvents\EventManagerInterface::detach()
 	 */
 	public function detach($event, $callback) {
-		if(EVENTS_SYSTEM_ACTIVE === true) {
+		if(EVENTS_SYSTEM_ENABLED=== true) {
 			if(isset(self::$psrEvents[$event])) {
 	
 				foreach (self::$psrEvents[$event] as $priorities) {
@@ -160,7 +160,7 @@ class WMEventController implements WMEventControllerInterface, EventManagerInter
 	 * @see \Core\Controllers\GFEvents\EventManagerInterface::clearListeners()
 	 */
 	public function clearListeners($event) {
-		if(EVENTS_SYSTEM_ACTIVE === true) {
+		if(EVENTS_SYSTEM_ENABLED=== true) {
 			if(isset(self::$psrEvents[$event])) {
 				self::$psrEvents[$event] = array();
 			}
@@ -172,7 +172,7 @@ class WMEventController implements WMEventControllerInterface, EventManagerInter
 	 * @see \Core\Controllers\GFEvents\EventManagerInterface::trigger()
 	 */
 	public function trigger($event, $target = null, $argv = []) {
-		if(EVENTS_SYSTEM_ACTIVE === true) {
+		if(EVENTS_SYSTEM_ENABLED=== true) {
 		    if(isset(self::$psrEvents[$event->getName()])) {
 	    		$max = max(array_keys(self::$psrEvents[$event->getName()]));
 	    		$lastResult = null;
@@ -191,7 +191,7 @@ class WMEventController implements WMEventControllerInterface, EventManagerInter
 	}
 
 	public static function triggerWithEventName($name) {
-		if(EVENTS_SYSTEM_ACTIVE === true) {
+		if(EVENTS_SYSTEM_ENABLED=== true) {
 		    $event = new WMEvent();
 		    $event->setName($name);
 		    $evento = new self();

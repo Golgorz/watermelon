@@ -18,8 +18,8 @@ class i18nController {
 	public static function localization($localization = DEFAULT_LOCALIZATION) {
 		static $localeData = NULL;
 		if (is_null($localeData)) {
-			$langFile = ROOT_PATH . '/app/Localization/' . $localization . '.json';
-			$langBase = ROOT_PATH . '/app/Localization/' . DEFAULT_LOCALIZATION . '.json';
+			$langFile = APP_LOCALIZATION_PATH . DS . $localization . '.json';
+			$langBase = APP_LOCALIZATION_PATH . DS . DEFAULT_LOCALIZATION . '.json';
 			if (!file_exists($langFile) || $localization == DEFAULT_LOCALIZATION) {
 				$jsonLang = file_get_contents($langBase);
 				$langData = json_decode($jsonLang, true);

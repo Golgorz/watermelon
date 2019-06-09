@@ -1,6 +1,8 @@
 <?php
 namespace core\controllers;
 
+use PHPMailer\PHPMailer\PHPMailer;
+
 require './Core/Vendors/PHPMailer/PHPMailerAutoload.php';
 
 /**
@@ -12,12 +14,12 @@ class SMTPController {
 
 
 	public static function sendTemplatedMail($dataArray) {
-		$mail = new \PHPMailer;
+		$mail = new PHPMailer;
 		$mail->isSMTP();
 
-		$mail->Host = SMTP_HOST;
-		$mail->Username = SMTP_USER;
-		$mail->Password = SMTP_PASS;
+		$mail->Host = $_ENV['SMTP_HOST'];
+		$mail->Username = $_ENV['SMTP_USER'];
+		$mail->Password = $_ENV['SMTP_PASS'];
 
 		$mail->SMTPAuth = true;
 		$mail->SMTPOptions = array(
@@ -29,8 +31,8 @@ class SMTPController {
 		);
 		$mail->SMTPSecure = 'tsl';
 		$mail->Port = 25;
-		$mail->From = SMTP_FROM;
-		$mail->FromName = utf8_decode(SMTP_FROM_NAME);
+		$mail->From = $_ENV['SMTP_FROM'];
+		$mail->FromName = utf8_decode($_ENV['SMTP_FROM_NAME']);
 
 		foreach ($dataArray["emails"] as $email) {
 			$mail->addAddress($email);
@@ -43,11 +45,12 @@ class SMTPController {
 		}
 		if(isset($dataArray["subject"]))
 			$mail->Subject = utf8_decode($dataArray["subject"]);
-			if(isset($dataArray["body"]))
-				$mail->Body = utf8_decode($dataArray["body"]);
-				if(isset($dataArray["textBody"]))
-					$mail->AltBody = utf8_decode($dataArray["textBody"]);
-					return $mail->send();
+		if(isset($dataArray["body"]))
+			$mail->Body = utf8_decode($dataArray["body"]);
+		if(isset($dataArray["textBody"]))
+			$mail->AltBody = utf8_decode($dataArray["textBody"]);
+		
+		return $mail->send();
 
 
 
@@ -56,7 +59,7 @@ class SMTPController {
 	public static function sendMail($dataArray) {
 
 		//Crear una instancia de PHPMailer
-		$mail = new \PHPMailer();
+		$mail = new PHPMailer();
 		//Definir que vamos a usar SMTP
 		$mail->IsSMTP();
 		//Esto es para activar el modo depuración. En entorno de pruebas lo mejor es 2, en producción siempre 0
@@ -65,21 +68,27 @@ class SMTPController {
 		// 2 = client and server messages
 		$mail->SMTPDebug  = 0;
 		//Ahora definimos gmail como servidor que aloja nuestro SMTP
-		$mail->Host       = SMTP_HOST;
+		$mail->Host       = $_ENV['SMTP_HOST'];
 		//El puerto será el 587 ya que usamos encriptación TLS
-		$mail->Port       = SMTP_PORT;
+		$mail->Port       = $_ENV['SMTP_PORT'];
 		//Definmos la seguridad como TLS
 		$mail->SMTPSecure = 'tls';
 		//Tenemos que usar gmail autenticados, así que esto a TRUE
 		$mail->SMTPAuth   = true;
 		//Definimos la cuenta que vamos a usar. Dirección completa de la misma
-		$mail->Username   = SMTP_USER;
+		$mail->Username   = $_ENV['SMTP_USER'];
 		//Introducimos nuestra contraseña de gmail
-		$mail->Password   = SMTP_PASS;
+		$mail->Password   = $_ENV['SMTP_PASS'];
 		//Definimos el remitente (dirección y, opcionalmente, nombre)
-		$mail->SetFrom(SMTP_FROM, SMTP_FROM_NAME);
+		$mail->SetFrom($_ENV['SMTP_FROM'], $_ENV['SMTP_FROM_NAME']);
 		//Esta línea es por si queréis enviar copia a alguien (dirección y, opcionalmente, nombre)
-		$mail->AddReplyTo('forgin50@gmail.com.com','Conclave Admin');
+		
+		if(isset($dataArray['cc'])) {
+			$ccTitle = "copy of email";
+			if(isset($dataArray['ccTitle']))$ccTitle = $dataArray['ccTitle'];
+			$mail->AddReplyTo($dataArray['cc'],$ccTitle);
+			
+		}
 
 		$mail->SMTPOptions = array(
 				'ssl' => array(
@@ -92,7 +101,6 @@ class SMTPController {
 		foreach ($dataArray["emails"] as $email) {
 			$mail->addAddress($email);
 		}
-		$mail->addCC("forgin50@gmail.com");
 		$mail->isHTML(true);
 		if(isset($dataArray["files"]) && count($dataArray["files"]) > 0) {
 			foreach ($dataArray["files"] as $file) {

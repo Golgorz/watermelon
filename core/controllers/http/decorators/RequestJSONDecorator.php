@@ -20,11 +20,16 @@ class RequestJSONDecorator {
 	}
 
 	public function setJSONResponse() {
-		$result = array();
-		$result["result"] = $this->request->getResponse()->getResponseBody();
-		$result = Utils::convertArrayKeysToUtf8($result);
 		$this->request->getResponse()->putHeaderValue("Content-Type", "application/json");
-		$this->request->getResponse()->setResponseBody(json_encode($result));
+		if($this->isJson($this->request->getResponse()->getResponseBody()) === false) {
+			$keysParsed = Utils::convertArrayKeysToUtf8($this->request->getResponse()->getResponseBody());
+			$this->request->getResponse()->setResponseBody(json_encode($keysParsed));
+		}
+	}
+	
+	function isJson($str) {
+		$json = json_decode($str);
+		return $json && $str != $json;
 	}
 
 }

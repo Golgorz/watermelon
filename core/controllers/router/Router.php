@@ -2,8 +2,8 @@
 namespace core\controllers\router;
 
 use core\controllers\wmevents\WMEventController;
-use Core\Controllers\Http\Psr\Request;
 use core\helpers\Utils;
+use core\controllers\http\psr\Request;
 
 class Router {
 
@@ -57,16 +57,18 @@ class Router {
 					$this->request->parseRouteParams($argument_keys, $matches);
 
 				}
-				$matchFound = true;
-				WMEventController::dispatch(ROUTER_MATCH_SUCCESS);
-				$this->request->setHasMatch(true);
-				$this->request->setMatchedRoute($route);
-				WMEventController::dispatch(ROUTER_PARSE_PARAMS_BEFORE);
-				$this->request->parseIncomingParams();
-				WMEventController::dispatch(ROUTER_PARSE_PARAMS_AFTER);
-
-				
-				break;
+				if(count($route->getVerbs()) == 0 || in_array($this->request->getMethod(), $route->getVerbs())) {
+					$matchFound = true;
+					WMEventController::dispatch(ROUTER_MATCH_SUCCESS);
+					$this->request->setHasMatch(true);
+					$this->request->setMatchedRoute($route);
+					WMEventController::dispatch(ROUTER_PARSE_PARAMS_BEFORE);
+					$this->request->parseIncomingParams();
+					WMEventController::dispatch(ROUTER_PARSE_PARAMS_AFTER);
+					break;
+				} else {
+					continue;
+				}
 
 			}
 		}

@@ -1,7 +1,7 @@
 <?php
 
 use core\WMCore;
-use app\AppIndex;
+use app\App;
 
 setShowError(true);
 define("ROOT_PATH", __DIR__);
@@ -14,16 +14,16 @@ $watermelon = WMCore::getInstance();
 
 
 //Your app initial logic
-$AppIndex = AppIndex::getInstance();
+$app = App::getInstance();
 
 //Active downloaded modules you installed
-$activeModules = $AppIndex->loadModules();
+$activeModules = $app->loadModules();
 
 //We load the bootstrap file of the modules
 $watermelon->loadModules($activeModules);
 
 //We attach your custom app routes
-$AppIndex->attachRoutes();
+$app->attachRoutes();
 
 
 //We launch the framework process

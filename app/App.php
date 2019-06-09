@@ -5,7 +5,7 @@ use core\WMCore;
 use core\controllers\http\psr\Response;
 use core\controllers\i18nController;
 
-class AppIndex {
+class App {
 	
 	private $WMCore;
 	private static $instance;
@@ -20,7 +20,7 @@ class AppIndex {
 	
 	/**
 	 *
-	 * @return AppIndex
+	 * @return App
 	 */
 	public static function getInstance() {
 		if (!isset(self::$instance)) {
@@ -31,7 +31,7 @@ class AppIndex {
 	}
 	
 	public function __clone() {
-		trigger_error('Cannot clone AppIndex class', E_USER_ERROR);
+		trigger_error('Cannot clone App class', E_USER_ERROR);
 	}
 	
 	

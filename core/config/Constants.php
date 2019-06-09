@@ -9,15 +9,9 @@ if (!defined('DS')) {
 }
 
 define("APP_ROOT_PATH", ROOT_PATH . '/app' );
+define("APP_LOCALIZATION_PATH", ROOT_PATH . '/app/localization' );
 define("LOG_FILE_PATH", ROOT_PATH . '/core/logs' );
 
-
-
-//SESSION OPTIONS
-define("SESSION_LENGTH", 3600); //30 MINS
-define("SESSIONS_SYSTEM_ACTIVE", true);
-define ("GF_GLOBAL_SESSION", "gf_session");
-define ("GF_DEFAULT_SESSION", "gf_default");
 
 //LOCALIZATION
 define("LOCALIZATION_ENABLED", true);
@@ -25,7 +19,7 @@ define("DEFAULT_LOCALIZATION", "es");
 
 
 //EVENTS
-define("EVENTS_SYSTEM_ACTIVE", true);
+define("EVENTS_SYSTEM_ENABLED", true);
 
 
 //LOGGING
@@ -43,7 +37,7 @@ define("DOMAIN_PATH","watermelon");
 define("REDIS_CACHE_ENABLED", false);
 
 
-
-//SECURITY
-
-define("CSRF_ENABLED", true);
+//JWT
+define("JWT_EXPIRES", false);
+define("JWT_EXPIRES_TIME", 3600); //maximum of 3600
+define("JWT_CHECK_AUD", true);

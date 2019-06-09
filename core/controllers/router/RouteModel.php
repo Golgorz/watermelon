@@ -16,34 +16,17 @@ class RouteModel
     public $name;
 
     /**
-     * The method of the class that should be called
+     * Class or Class::method
      * @var string
      */
-    public $targetClassMethod;
-
-    /**
-     * The class that should be instanciated
-     * @var string
-     */
-    public $targetClass;
-
-    /**
-     * If CSRF check is needed (Only with POST method i guess)
-     * @var boolean
-     */
-    public $isCSRFProtected;
-
+    public $target;
+    
     /**
      * Accepted HTTP verb, empty array for all.
      * @var array() $verbs
      */
     public $verbs;
 
-    /**
-     * function to run when route match. if set, ignores all other variables
-     * @var function
-     */
-    public $function;
     
 
     private function __construct() {
@@ -52,56 +35,39 @@ class RouteModel
 
     /**
      * @param String $url
-     * @param array() $config ("name","targetClassMethod","targetClass","verbs","checkCSRF")
+     * @param array() $config ("name","target","verbs")
      */
     public static function withConfig($url, array $config) {
-
-    	$instance = new self();
-
-    	$instance->url     			 	= $url;
-    	$instance->name					= isset($config['name']) ? $config['name'] : null;
-    	$instance->targetClassMethod	= isset($config['targetClassMethod']) ? $config['targetClassMethod'] : null;
-    	$instance->targetClass 			= isset($config['targetClass']) ? $config['targetClass'] : null;
-    	$instance->verbs 				= isset($config['verbs']) ? (array) $config['verbs'] : array();
-    	$instance->isCSRFProtected		= isset($config['checkCSRF']) ? $config['checkCSRF'] : true;
-
-        return $instance;
+    	
+    	return self::with($url, 
+    			isset($config['target']) ? $config['target'] : null, 
+    			isset($config['verbs']) ? (array) $config['verbs'] : array(),
+    			isset($config['name']) ? $config['name'] : "");
     }
+    
 
-    public static function with($url, $class, $checkcsrf = false, $method = null, $name = "" ) {
+    public static function with( $url, $target, $verbs = array(), $name = "") {
 
     	$instance = new self();
 
-    	$instance->url     			 	= $url;
-    	$instance->name					= $name;
-    	$instance->targetClass 			= $class;
-    	$instance->targetClassMethod	= $method;
-    	$instance->isCSRFProtected			= $checkcsrf;
+    	$instance->url     	= $url;
+    	$instance->name		= $name;
+    	$instance->target 	= $target;
+    	$instance->verbs	= $verbs;
+    	
+    	if(is_null($instance->target) ) throw new \Exception('null target');
 
     	return $instance;
     }
 
-    public static function withFunction($url, $function) {
-    	$instance = new self();
-
-    	$instance->url     			 	= $url;
-    	$instance->name					= "";
-    	$instance->function				= $function;
-    	$instance->targetClass 			= null;
-    	$instance->targetClassMethod	= null;
-    	$instance->isCSRFProtected			= null;
-    	return $instance;
-    }
 
     /**
      * @param array() $config ("name","targetClassMethod","targetClass","verbs","checkCSRF")
      */
     public function updateConfig($config) {
-    	$this->name					= isset($config['name']) ? $config['name'] : null;
-        $this->targetClassMethod	= isset($config['targetClassMethod']) ? $config['targetClassMethod'] : null;
-        $this->targetClass 			= isset($config['targetClass']) ? $config['targetClass'] : null;
-        $this->verbs 				= isset($config['verbs']) ? (array) $config['verbs'] : array();
-        $this->isCSRFProtected		= isset($config['checkCSRF']) ? $config['checkCSRF'] : true;
+    	$this->name		= isset($config['name']) ? $config['name'] : $this->name;
+        $this->target	= isset($config['target']) ? $config['target'] : $this->target;
+        $this->verbs	= isset($config['verbs']) ? $config['verbs'] : $this->verbs;
     }
 
 
@@ -119,57 +85,38 @@ class RouteModel
     }
 
 
-    public function getVerbs() {
-        return $this->verbs;
-    }
-    public function setVerbs(array $methods) {
-        $this->verbs = $methods;
-    }
-
-    public function getFunction() {
-    	return $this->function;
-    }
-    public function setFunction($callback) {
-    	$this->function = $callback;
-    }
-
-
-
     public function getName() {
         return $this->name;
     }
     public function setName($name)  {
         $this->name = (string)$name;
     }
-
-
-    public function getTargetClassMethod() {
-    	return $this->targetClassMethod;
+    
+    /**
+     * 
+     * @return \core\controllers\router\array()
+     */
+    public function getVerbs() {
+    	return $this->verbs;
     }
-    public function setTargetClassMethod($targetClassMethod) {
-    	$this->targetClassMethod = $targetClassMethod;
-    }
-
-
-    public function getTargetClass() {
-    	return $this->targetClass;
-    }
-    public function setTargetClass($targetClass) {
-    	$this->targetClass = $targetClass;
+    public function setVerbs(array $methods) {
+    	$this->verbs = $methods;
     }
 
 
     public function getRegex()  {
         return preg_replace('/(:\w+)/', '([\w]+)', $this->url);
     }
+	public function getTarget() {
+		return $this->target;
+	}
+	public function setTarget($target) {
+		$this->target = $target;
+		return $this;
+	}
+	
 
 
-	public function getCheckCSRF() {
-		return $this->isCSRFProtected;
-	}
-	public function setCheckCSRF($checkCSRF) {
-		$this->isCSRFProtected = $checkCSRF;
-	}
 
 
 

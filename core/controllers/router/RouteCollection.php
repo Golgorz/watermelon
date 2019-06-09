@@ -28,6 +28,11 @@ class RouteCollection extends \SplObjectStorage
 		if($this->contains($routeObject))
 			parent::detach($routeObject);
 	}
+	
+	/**
+	 * 
+	 * @return RouteModel[]
+	 */
 
 	public function getAllRoutes(){
 		$routes = array();
@@ -58,6 +63,6 @@ class RouteCollection extends \SplObjectStorage
 			}
 		}
 		parent::attach($routeObject);
-		return false;
+		return true;
 	}
 }
