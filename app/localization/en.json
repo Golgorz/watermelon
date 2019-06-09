@@ -1,0 +1,17 @@
+{
+"admin-login" : {
+	"usuario": "User",
+	"contrasena" : "Password",
+	"login": "Log in",
+	"alreadyLogged": "You are already logged in",
+	"continue": "Continue with my session",
+	"exit": "Logout please"
+	},
+"admin-register" : {
+	"user": "User",
+	"pass" : "Password",
+	"register": "Sign up",
+	"email": "Email",
+	"formTitle": "Register form"
+	}
+}

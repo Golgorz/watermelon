@@ -1,0 +1,25 @@
+{
+    "name": "golgorz/watermelon",
+    "description": "Just another PHP framework, but easy to use...at least for me soz!",
+    "type": "project",
+    "require": {
+        "predis/predis": "^1.1",
+        "monolog/monolog": "^1.24",
+        "phpmailer/phpmailer": "^6.0",
+        "firebase/php-jwt": "^5.0",
+         "jms/serializer": "^3.0",
+         "symfony/dotenv": "^4.3"
+    },
+    "license": "Apache 2.0",
+    "authors": [
+        {
+            "name": "Diego Lopez Rivera",
+            "email": "forgin50@gmail.com"
+        }
+    ],
+    "config": {
+        "vendor-dir": "core/vendors"
+    },
+    "minimum-stability": "stable"
+    
+}
